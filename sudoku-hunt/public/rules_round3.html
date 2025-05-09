@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round 2 Rules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+    /* Base Styles */
+    :root {
+      --red: #ff0000;
+      --blue: #0066ff;
+      --dark-bg: #000;
+      --medium-bg: #1a1a1a;
+      --input-bg: rgba(30, 30, 30, 0.8);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Arial Black', sans-serif;
+      overflow: auto;
+      background: var(--dark-bg);
+      -webkit-tap-highlight-color: transparent;
+      color: white;
+    }
+    
+    /* Header Styles */
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      padding: 10px 0;
+      background: rgba(0,0,0,0.7);
+      border-bottom: 1px solid var(--red);
+    }
+    
+    .institution {
+      color: var(--red);
+      font-size: clamp(16px, 5vw, 24px);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0;
+      text-shadow: 0 0 10px var(--red);
+    }
+    
+    .ieee-branch {
+      color: var(--blue);
+      font-size: clamp(12px, 3.5vw, 18px);
+      letter-spacing: 3px;
+      margin: 5px 0 0;
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: min(95vw, 800px);
+      margin: 80px auto 20px;
+      background: rgba(10, 10, 10, 0.8);
+      padding: clamp(15px, 4vw, 30px);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid var(--red);
+    }
+    
+    /* Title Styles */
+    h1 {
+      color: var(--red);
+      text-align: center;
+      margin-bottom: clamp(15px, 4vw, 30px);
+      font-size: clamp(20px, 6vw, 32px);
+      text-shadow: 0 0 10px var(--red);
+      letter-spacing: 1px;
+    }
+    
+    h3 {
+      color: var(--blue);
+      font-size: clamp(16px, 4.5vw, 22px);
+      margin-bottom: clamp(10px, 3vw, 20px);
+      border-bottom: 1px solid var(--blue);
+      padding-bottom: 5px;
+      text-shadow: 0 0 5px var(--blue);
+    }
+    
+    .team-name {
+      font-weight: bold;
+      color: var(--blue);
+      text-align: center;
+      margin-bottom: clamp(15px, 4vw, 25px);
+      font-size: clamp(14px, 4vw, 18px);
+      letter-spacing: 1px;
+    }
+    
+    /* Rules List */
+    .rules-list {
+      margin-bottom: clamp(20px, 5vw, 30px);
+    }
+    
+    .rules-list ol {
+      padding-left: clamp(20px, 5vw, 30px);
+    }
+    
+    .rules-list li {
+      margin-bottom: clamp(8px, 2vw, 12px);
+      line-height: 1.6;
+      font-size: clamp(12px, 3.5vw, 16px);
+      color: #ddd;
+    }
+    
+    /* Button Styles */
+    .btn {
+      display: block;
+      width: clamp(180px, 50vw, 250px);
+      margin: clamp(15px, 4vw, 30px) auto;
+      padding: clamp(10px, 3vw, 14px);
+      background: linear-gradient(to right, var(--red), #990000);
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(14px, 4vw, 18px);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+    
+    .btn:hover {
+      background: linear-gradient(to right, #ff3333, #cc0000);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { text-shadow: 0 0 5px var(--red); }
+      50% { text-shadow: 0 0 15px var(--red); }
+      100% { text-shadow: 0 0 5px var(--red); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      .rules-list ol {
+        padding-left: 15px;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        margin-top: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="institution">IEEE EVENT</h1>
+        <p class="ieee-branch">ROUND 2 RULES</p>
+    </div>
+    
+    <div class="container">
+        <h1>ROUND 2 RULES</h1>
+        <div class="team-name">Team: <span id="teamName" class="pulse"></span></div>
+        
+        <div class="rules-list">
+            <h3>IMPORTANT RULES:</h3>
+            <ol>
+                <li>You will get to select from 12 different codes.</li>
+                <li>Each code can be attempted maximum 3 times.</li>
+                <li>If you fail to solve a code in 3 attempts, that code will be locked for you.</li>
+                <li>You can attempt other available codes.</li>
+                <li>The first team to solve a code gets maximum points.</li>
+                <li>Time is limited - manage your attempts wisely!</li>
+                <li>Any cheating will result in disqualification.</li>
+            </ol>
+        </div>
+    </div>
+
+    <a id="enterRound2" class="btn">ENTER ROUND 2</a>
+
+    <script>
+        // Get team from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const team = urlParams.get('team');
+        
+        if (team) {
+            document.getElementById('teamName').textContent = team;
+        }
+
+        // Set up button when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const enterBtn = document.getElementById('enterRound2');
+            
+            if (team) {
+                // Properly set the href with encoded team name
+                enterBtn.href = `/round2.html?team=${encodeURIComponent(team)}`;
+            } else {
+                // Handle missing team parameter
+                enterBtn.onclick = (e) => {
+                    e.preventDefault();
+                    alert("Team information missing! Returning to login.");
+                    window.location.href = '/index.html';
+                };
+            }
+        });
+    </script>
+</body>
+</html>

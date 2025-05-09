@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clue Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Base Styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Orbitron', 'Arial Black', sans-serif;
+      background: radial-gradient(circle, #000000 0%, #1a1a1a 100%);
+      color: white;
+    }
+
+    /* Main Container */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* AJIET Header */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-top: 10px;
+    }
+    
+    .institution {
+      color: #ff0000;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    
+    .ieee-branch {
+      color: #0066ff;
+      font-size: 18px;
+      letter-spacing: 5px;
+      margin-bottom: 15px;
+    }
+
+    /* Team Display */
+    .team-display {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #ff0000;
+      border-radius: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+      margin: 0 auto 30px;
+      width: fit-content;
+    }
+
+    /* Dashboard Container */
+    .dashboard-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      background: rgba(10, 10, 10, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+      border: 1px solid #ff0000;
+      box-sizing: border-box;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .dashboard-title {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #ff0000;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-shadow: 0 0 15px #ff0000;
+      position: relative;
+    }
+
+    .dashboard-title:after {
+      content: "";
+      display: block;
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(to right, transparent, #ff0000, transparent);
+      margin: 15px auto;
+    }
+
+    /* Form Styles */
+    .clue-form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      flex-grow: 1;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #0066ff;
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-size: 18px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(30, 30, 30, 0.8);
+      color: white;
+      font-size: 16px;
+      border: 1px solid #333;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 2px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #ff0000;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(to right, #ff0000, #990000);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+      margin-top: auto;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(to right, #ff3333, #cc0000);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .loading-text {
+      color: #ff0000;
+      font-size: 24px;
+      margin-bottom: 30px;
+      letter-spacing: 3px;
+      text-align: center;
+    }
+
+    .bomb-loader {
+      width: 80px;
+      height: 80px;
+      position: relative;
+    }
+
+    .bomb-loader:before {
+      content: "💣";
+      font-size: 60px;
+      position: absolute;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .progress-bar {
+      width: 80%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #ff0000, #ff6600);
+      transition: width 0.3s;
+    }
+
+    /* Message Styles */
+    .message-container {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      display: none;
+    }
+
+    .error-message {
+      background: rgba(255, 50, 50, 0.2);
+      border: 1px solid #ff0000;
+      color: #ff6b6b;
+    }
+
+    .success-message {
+      background: rgba(50, 255, 50, 0.2);
+      border: 1px solid #00ff00;
+      color: #66ff66;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 25px;
+      }
+
+      .dashboard-title {
+        font-size: 24px;
+      }
+
+      .institution {
+        font-size: 22px;
+      }
+
+      .ieee-branch {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-container {
+        padding: 15px;
+      }
+
+      .dashboard-container {
+        padding: 20px 15px;
+      }
+
+      .dashboard-title {
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
+      .institution {
+        font-size: 20px;
+      }
+
+      .ieee-branch {
+        font-size: 14px;
+        letter-spacing: 3px;
+      }
+
+      .team-display {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .input-group label {
+        font-size: 16px;
+      }
+
+      .submit-btn {
+        padding: 12px;
+        font-size: 16px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="main-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="institution">AJIET</div>
+      <div class="ieee-branch">IEEE STUDENT BRANCH</div>
+    </div>
+
+    <!-- Team Display -->
+    <div class="team-display" id="teamDisplay">TEAM: <span id="teamName"></span></div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+      <div class="dashboard-title">CLUE INTERFACE</div>
+      
+      <form class="clue-form" id="clueForm">
+        <input type="hidden" name="team" id="teamField" />
+        <input type="hidden" name="selectedCode" id="selectedCodeField" />
+        
+        <div class="input-group">
+          <label id="codeLabel">ENTER CLUE NUMBER</label>
+          <input type="text" name="clueNumber" id="clueInput" required placeholder="ENTER CLUE NUMBER" autocomplete="off" />
+        </div>
+        
+        <button type="submit" class="submit-btn">VERIFY CODE</button>
+      </form>
+
+      <div id="messageContainer" class="message-container"></div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-text">ACCESSING DATABASE</div>
+    <div class="bomb-loader"></div>
+    <div class="progress-bar">
+      <div class="progress" id="progressBar"></div>
+    </div>
+  </div>
+
+  <script>
+    // Set team name and selected code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamName = urlParams.get('team');
+    const selectedCode = urlParams.get('code');
+    const message = urlParams.get('message');
+    const messageType = urlParams.get('messageType');
+    
+    document.getElementById("teamField").value = teamName;
+    document.getElementById("selectedCodeField").value = selectedCode;
+    document.getElementById("teamName").textContent = teamName || 'UNKNOWN';
+
+    // Display selected code if present
+    if (selectedCode) {
+      document.getElementById("codeLabel").textContent = `ENTER CLUE NUMBER FOR ${selectedCode.toUpperCase()}`;
+    }
+
+    // Display any messages from URL
+    if (message) {
+      const decodedMessage = decodeURIComponent(message.replace(/\+/g, ' '));
+      showMessage(decodedMessage, messageType || 'error');
+    }
+
+    // Form submission with AJAX
+    document.getElementById("clueForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const clueNumber = document.getElementById("clueInput").value.trim();
+      const team = document.getElementById("teamField").value;
+      const selectedCode = document.getElementById("selectedCodeField").value;
+      
+      if (!clueNumber) {
+        showMessage("Please enter a clue number", "error");
+        return;
+      }
+      
+      // Show loading animation
+      showLoading(true);
+      
+      try {
+        const response = await fetch('/submit-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            team: team,
+            selectedCode: selectedCode,
+            clueNumber: clueNumber
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          // Handle error response
+          showMessage(result.message || result.error || "Verification failed", "error");
+          
+          if (result.redirect) {
+            setTimeout(() => {
+              window.location.href = result.redirect;
+            }, 1500);
+          }
+        } else {
+          // Successful verification
+          if (result.redirect) {
+            window.location.href = result.redirect;
+          } else {
+            showMessage(result.message || "Code verified successfully!", "success");
+          }
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        showMessage("Network error. Please try again.", "error");
+      } finally {
+        // Hide loading overlay
+        showLoading(false);
+      }
+    });
+
+    // Helper function to show/hide loading overlay
+    function showLoading(show) {
+      const overlay = document.getElementById("loadingOverlay");
+      const progressBar = document.getElementById("progressBar");
+      
+      if (show) {
+        overlay.style.opacity = "1";
+        overlay.style.pointerEvents = "auto";
+        
+        // Animate progress bar
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 5;
+          progressBar.style.width = `${progress}%`;
+          if (progress >= 100) clearInterval(interval);
+        }, 50);
+        
+        // Store interval ID to clear later
+        overlay.dataset.intervalId = interval;
+      } else {
+        overlay.style.opacity = "0";
+        overlay.style.pointerEvents = "none";
+        progressBar.style.width = "0%";
+        clearInterval(overlay.dataset.intervalId);
+      }
+    }
+
+    // Helper function to show messages
+    function showMessage(message, type = "error") {
+      const messageContainer = document.getElementById("messageContainer");
+      messageContainer.textContent = message;
+      messageContainer.className = `message-container ${type}-message`;
+      messageContainer.style.display = 'block';
+      
+      // Auto-hide success messages after 5 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          messageContainer.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    // Add red border to input when focused
+    const input = document.getElementById("clueInput");
+    input.addEventListener('focus', function() {
+      this.style.borderColor = '#ff0000';
+      this.style.boxShadow = '0 0 15px rgba(255, 0, 0, 0.5)';
+    });
+    
+    input.addEventListener('blur', function() {
+      this.style.borderColor = '#333';
+      this.style.boxShadow = 'none';
+    });
+
+    // Focus the input field on page load
+    document.getElementById("clueInput").focus();
+  </script>
+</body>
+</html>

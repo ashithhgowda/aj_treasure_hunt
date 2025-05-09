@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - IEEE Event</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Orbitron', 'Arial Black', sans-serif;
+            background: radial-gradient(circle, #000000 0%, #1a1a1a 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            background: rgba(10, 10, 10, 0.9);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3);
+            border-bottom: 1px solid #ff0000;
+            z-index: 100;
+        }
+        
+        .institution {
+            color: #ff0000;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .ieee-branch {
+            color: #0066ff;
+            font-size: 18px;
+            letter-spacing: 5px;
+        }
+
+        /* Main Container */
+        .admin-container {
+            display: flex;
+            min-height: 100%;
+            padding-top: 100px;
+            box-sizing: border-box;
+        }
+
+        /* Left Panel - Teams List */
+        .teams-panel {
+            width: 30%;
+            padding: 20px;
+            background: rgba(20, 20, 20, 0.8);
+            border-right: 1px solid #333;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            color: #ff0000;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ff0000;
+            letter-spacing: 2px;
+        }
+
+        .team-card {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #0066ff;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+        }
+
+        .team-name {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .team-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .stat {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .clue-stat {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            border: 1px solid #ffa500;
+        }
+
+        .playing-stat {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .disqualified-stat {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+
+        .points-stat {
+            background: rgba(0, 102, 255, 0.2);
+            color: #0066ff;
+            border: 1px solid #0066ff;
+        }
+
+        /* Right Panel - Stats and Controls */
+        .stats-panel {
+            width: 70%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-top: 3px solid #ff0000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff0000;
+            margin: 10px 0;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .controls-card {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-top: 3px solid #0066ff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-title {
+            color: #0066ff;
+            font-size: 18px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(50, 50, 50, 0.8);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border: 1px solid #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(to right, #ff0000, #990000);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 10px;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(to right, #ff3333, #cc0000);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .reset-btn {
+            background: linear-gradient(to right, #0066ff, #003399);
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(to right, #3388ff, #0055cc);
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
+        }
+
+        /* Team Table */
+        .team-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .team-table th {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 14px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #ff0000;
+        }
+
+        .team-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+
+        .team-table tr:hover {
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        /* Round Controls */
+        .round-controls {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-top: 3px solid #ffcc00;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .round-title {
+            color: #ffcc00;
+            font-size: 18px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .round-btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .round-btn.active {
+            background: linear-gradient(to right, #ffcc00, #ff9900);
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        
+        .round-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .round-status {
+            margin-top: 10px;
+            color: #ffcc00;
+            font-size: 14px;
+        }
+
+        /* Winner Banner */
+        .winner-banner {
+            background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.3) 50%, rgba(255,215,0,0.1) 100%);
+            border: 1px solid #ffcc00;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            animation: pulse 2s infinite;
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
+            100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+        }
+
+        .winner-title {
+            color: #ffcc00;
+            font-size: 18px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .winner-name {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        /* Message Styles */
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: none;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6666;
+            border: 1px solid #ff0000;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #66ff66;
+            border: 1px solid #00ff00;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .teams-panel, .stats-panel {
+                width: 100%;
+            }
+            
+            .teams-panel {
+                border-right: none;
+                border-bottom: 1px solid #333;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 10px 0;
+            }
+            
+            .institution {
+                font-size: 20px;
+            }
+            
+            .ieee-branch {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .team-card {
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .team-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="institution">IEEE EVENT</div>
+        <div class="ieee-branch">ADMIN CONTROL PANEL</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="admin-container">
+        <!-- Left Panel - Teams List -->
+        <div class="teams-panel">
+            <div class="panel-title">REGISTERED TEAMS</div>
+            <div id="teamsList">
+                <!-- Teams will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Right Panel - Stats and Controls -->
+        <div class="stats-panel">
+            <!-- Winner Banner -->
+            <div id="winnerBanner" class="winner-banner">
+                <div class="winner-title">WINNER</div>
+                <div id="winnerName" class="winner-name"></div>
+            </div>
+
+            <!-- Round Controls -->
+            <div class="round-controls">
+                <div class="round-title">GAME ROUND CONTROLS</div>
+                <div id="roundDisplay" class="round-status">Current Round: Loading...</div>
+                <button id="roundSwitchBtn" class="action-btn">Switch Round</button>
+                <div id="adminMessage" class="message"></div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">TOTAL TEAMS</div>
+                    <div class="stat-value" id="totalTeams">0</div>
+                    <div class="stat-label">PARTICIPATING</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">CLUES FOUND</div>
+                    <div class="stat-value" id="cluesFound">0</div>
+                    <div class="stat-label">BY ALL TEAMS</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">ROUND CLEARED</div>
+                    <div class="stat-value" id="roundsCleared">0</div>
+                    <div class="stat-label">100 POINTS AWARDED</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">DISQUALIFIED</div>
+                    <div class="stat-value" id="disqualified">0</div>
+                    <div class="stat-label">TOO MANY ATTEMPTS</div>
+                </div>
+            </div>
+
+            <!-- Controls Card -->
+            <div class="controls-card">
+                <div class="control-title">TEAM MANAGEMENT</div>
+                <div class="input-group">
+                    <label>TEAM NAME</label>
+                    <input type="text" id="newTeamName" placeholder="Enter team name">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <input type="text" id="newTeamPassword" placeholder="Enter password">
+                </div>
+                <button id="createTeamBtn" class="action-btn">CREATE NEW TEAM</button>
+            </div>
+
+            <!-- Reset Card -->
+            <div class="controls-card">
+                <div class="control-title">SYSTEM CONTROLS</div>
+                <button id="resetAllBtn" class="action-btn reset-btn">RESET ALL TEAMS</button>
+                <button id="resetPointsBtn" class="action-btn reset-btn">RESET POINTS ONLY</button>
+            </div>
+
+            <!-- Team Details Table -->
+            <table class="team-table">
+                <thead>
+                    <tr>
+                        <th>TEAM NAME</th>
+                        <th>CURRENT ACTIVITY</th>
+                        <th>STATUS</th>
+                        <th>POINTS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="teamTableBody">
+                    <!-- Team rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let teamsData = [];
+        let cluesData = [];
+        let currentRound = 'round2';
+        let winner = null;
+
+        // Fetch initial data
+        async function fetchData() {
+    try {
+        // Fetch current round
+        const roundRes = await fetch('/current-round');
+        const roundData = await roundRes.json();
+        currentRound = roundData.currentRound || 'round2';
+        updateRoundUI();
+        
+        // Fetch teams data
+        const teamsRes = await fetch('/admin-teams');
+        teamsData = await teamsRes.json();
+        
+        // Fetch clues data - ensure it's always an array
+        const cluesRes = await fetch('/admin-clues');
+        const cluesResponse = await cluesRes.json();
+        cluesData = Array.isArray(cluesResponse) ? cluesResponse : [];
+        
+        // Check for winner
+        await checkWinner();
+        
+        // Update UI
+        updateStats();
+        renderTeamsList();
+        renderTeamTable();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        showMessage('Failed to load data. Please refresh the page.', 'error');
+    }
+}
+
+function updateStats() {
+    const teamsArray = Object.keys(teamsData).map(name => ({ name, ...teamsData[name] }));
+    
+    // Total teams
+    document.getElementById('totalTeams').textContent = teamsArray.length;
+    
+    // Clue attempts - handle cases where cluesData might be empty or malformed
+    let validClueAttempts = 0;
+    if (Array.isArray(cluesData)) {
+        cluesData.forEach(clue => {
+            if (clue.teams && Array.isArray(clue.teams)) {
+                validClueAttempts += clue.teams.length;
+            }
+        });
+    }
+    document.getElementById('cluesFound').textContent = validClueAttempts;
+    
+    // Rest of your stats calculation...
+    const roundsCleared = teamsArray.filter(team => team.points > 0).length;
+    document.getElementById('roundsCleared').textContent = roundsCleared;
+    
+    const disqualified = teamsArray.filter(team => team.disqualified).length;
+    document.getElementById('disqualified').textContent = disqualified;
+}
+
+        function renderTeamsList() {
+            const container = document.getElementById('teamsList');
+            container.innerHTML = '';
+            
+            const teamsArray = Object.keys(teamsData).map(name => ({ name, ...teamsData[name] }));
+            
+            teamsArray.forEach(team => {
+                const teamCard = document.createElement('div');
+                teamCard.className = 'team-card';
+                
+                const teamName = document.createElement('div');
+                teamName.className = 'team-name';
+                teamName.textContent = team.name;
+                
+                const teamStats = document.createElement('div');
+                teamStats.className = 'team-stats';
+                
+                // Current activity based on round
+                const activityStat = document.createElement('div');
+                activityStat.className = 'stat clue-stat';
+                if (currentRound === 'round3' && team.round3) {
+                    activityStat.textContent = team.round3.currentChallenge || 'N/A';
+                } else {
+                    activityStat.textContent = team.currentClue || 'N/A';
+                }
+                
+                // Status
+                const statusStat = document.createElement('div');
+                if (team.winner) {
+                    statusStat.className = 'stat points-stat';
+                    statusStat.textContent = 'WINNER';
+                } else if (team.disqualified) {
+                    statusStat.className = 'stat disqualified-stat';
+                    statusStat.textContent = 'DQ';
+                } else if (currentRound === 'round3' && team.points < 100) {
+                    statusStat.className = 'stat disqualified-stat';
+                    statusStat.textContent = 'QUALIFIED';
+                } else {
+                    statusStat.className = 'stat playing-stat';
+                    statusStat.textContent = 'PLAYING';
+                }
+                
+                // Points
+                const pointsStat = document.createElement('div');
+                pointsStat.className = 'stat points-stat';
+                pointsStat.textContent = `${team.points || 0}PTS`;
+                
+                teamStats.appendChild(activityStat);
+                teamStats.appendChild(statusStat);
+                teamStats.appendChild(pointsStat);
+                
+                teamCard.appendChild(teamName);
+                teamCard.appendChild(teamStats);
+                
+                container.appendChild(teamCard);
+            });
+        }
+
+        function renderTeamTable() {
+            const tbody = document.getElementById('teamTableBody');
+            tbody.innerHTML = '';
+            
+            const teamsArray = Object.keys(teamsData).map(name => ({ name, ...teamsData[name] }));
+            
+            teamsArray.forEach(team => {
+                const row = document.createElement('tr');
+                
+                // Team name
+                const nameCell = document.createElement('td');
+                nameCell.textContent = team.name;
+                
+                // Current activity
+                const activityCell = document.createElement('td');
+                if (currentRound === 'round3' && team.round3) {
+                    activityCell.textContent = team.round3.currentChallenge || 'Not started';
+                } else {
+                    activityCell.textContent = team.currentClue || 'Not started';
+                }
+                
+                // Status
+                const statusCell = document.createElement('td');
+                if (team.winner) {
+                    statusCell.innerHTML = '<span style="color:#ffcc00;font-weight:bold">WINNER</span>';
+                } else if (team.disqualified) {
+                    statusCell.innerHTML = '<span style="color:#ff0000">DISQUALIFIED</span>';
+                } else if (currentRound === 'round3' && team.points < 100) {
+                    statusCell.innerHTML = '<span style="color:#ff9900">QUALIFIED</span>';
+                } else if (team.points >= 100) {
+                    statusCell.innerHTML = '<span style="color:#00ff00">ROUND CLEARED</span>';
+                } else {
+                    statusCell.innerHTML = '<span style="color:#0066ff">PLAYING</span>';
+                }
+                
+                // Points
+                const pointsCell = document.createElement('td');
+                pointsCell.textContent = team.points || '0';
+                
+                // Actions
+                const actionsCell = document.createElement('td');
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'action-btn';
+                resetBtn.style.padding = '5px 10px';
+                resetBtn.style.fontSize = '12px';
+                resetBtn.textContent = 'RESET';
+                resetBtn.onclick = () => resetTeam(team.name);
+                
+                actionsCell.appendChild(resetBtn);
+                
+                row.appendChild(nameCell);
+                row.appendChild(activityCell);
+                row.appendChild(statusCell);
+                row.appendChild(pointsCell);
+                row.appendChild(actionsCell);
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Create new team
+        async function createTeam() {
+            const name = document.getElementById('newTeamName').value.trim();
+            const password = document.getElementById('newTeamPassword').value.trim();
+            
+            if (!name || !password) {
+                showMessage('Please enter both team name and password', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/create-team', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, password })
+                });
+                
+                if (response.ok) {
+                    document.getElementById('newTeamName').value = '';
+                    document.getElementById('newTeamPassword').value = '';
+                    await fetchData();
+                    showMessage('Team created successfully', 'success');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to create team');
+                }
+            } catch (error) {
+                console.error('Error creating team:', error);
+                showMessage(error.message, 'error');
+            }
+        }
+
+        // Reset a single team
+        async function resetTeam(teamName) {
+            if (!confirm(`Reset ${teamName}? This will clear all their progress.`)) return;
+            
+            try {
+                const response = await fetch('/reset-team', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ team: teamName })
+                });
+                
+                if (!response.ok) throw new Error('Failed to reset team');
+                
+                await fetchData();
+                showMessage(`Team ${teamName} reset successfully`, 'success');
+            } catch (error) {
+                console.error('Reset failed:', error);
+                showMessage('Failed to reset team', 'error');
+            }
+        }
+
+        // Reset all teams
+        async function resetAll() {
+            if (!confirm('Reset ALL teams? This cannot be undone.')) return;
+            
+            try {
+                await fetch('/reset-all', { method: 'POST' });
+                await fetchData();
+                showMessage('All teams reset successfully', 'success');
+            } catch (error) {
+                console.error('Error resetting all teams:', error);
+                showMessage('Failed to reset teams', 'error');
+            }
+        }
+
+        // Reset points only
+        async function resetPoints() {
+            if (!confirm('Reset ALL points? Team progress will remain but points will be zero.')) return;
+            
+            try {
+                await fetch('/reset-points', { method: 'POST' });
+                await fetchData();
+                showMessage('All points reset successfully', 'success');
+            } catch (error) {
+                console.error('Error resetting points:', error);
+                showMessage('Failed to reset points', 'error');
+            }
+        }
+
+        // Switch rounds
+        async function switchRound() {
+            const newRound = currentRound === 'round2' ? 'round3' : 'round2';
+            
+            if (newRound === 'round3') {
+                // Count qualified teams
+                const qualified = Object.values(teamsData).filter(team => 
+                    team.points >= 100 && !team.disqualified
+                ).length;
+                
+                if (qualified === 0) {
+                    showMessage('No teams qualified for Round 3 (need 100+ points)', 'error');
+                    return;
+                }
+                
+                if (!confirm(`Switch to Round 3? ${qualified} team(s) will qualify. Others will be disqualified.`)) {
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch('/switch-round', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetRound: newRound })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentRound = newRound;
+                    updateRoundUI();
+                    await fetchData();
+                    showMessage(`Switched to ${newRound.toUpperCase()}. ${result.qualifiedTeams} team(s) qualified.`, 'success');
+                    
+                    // Check for winner if switching back to round2
+                    if (newRound === 'round2') {
+                        checkWinner();
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to switch rounds');
+                }
+            } catch (error) {
+                console.error('Round switch failed:', error);
+                showMessage(error.message, 'error');
+            }
+        }
+
+        // Check for winner
+        async function checkWinner() {
+            try {
+                const response = await fetch('/get-winner');
+                const data = await response.json();
+                
+                if (data.winner) {
+                    winner = data.winner;
+                    showWinner(winner);
+                } else {
+                    hideWinner();
+                }
+            } catch (error) {
+                console.error('Error checking winner:', error);
+            }
+        }
+
+        function showWinner(winnerName) {
+            const banner = document.getElementById('winnerBanner');
+            const nameDisplay = document.getElementById('winnerName');
+            
+            nameDisplay.textContent = winnerName;
+            banner.style.display = 'block';
+        }
+
+        function hideWinner() {
+            document.getElementById('winnerBanner').style.display = 'none';
+        }
+
+        function updateRoundUI() {
+            const roundDisplay = document.getElementById('roundDisplay');
+            const roundSwitchBtn = document.getElementById('roundSwitchBtn');
+            
+            if (currentRound === 'round2') {
+                roundDisplay.textContent = 'CURRENT ROUND: 2 - CODE SELECTION';
+                roundDisplay.style.color = '#0066ff';
+                roundSwitchBtn.textContent = 'Switch to Round 3';
+                roundSwitchBtn.style.background = 'linear-gradient(to right, #ffcc00, #ff9900)';
+                roundSwitchBtn.style.color = '#000';
+            } else {
+                roundDisplay.textContent = 'CURRENT ROUND: 3 - FINAL CHALLENGE';
+                roundDisplay.style.color = '#ffcc00';
+                roundSwitchBtn.textContent = 'Switch to Round 2';
+                roundSwitchBtn.style.background = 'linear-gradient(to right, #0066ff, #003399)';
+                roundSwitchBtn.style.color = '#fff';
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('adminMessage');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            
+            // Set up event listeners
+            document.getElementById('roundSwitchBtn').addEventListener('click', switchRound);
+            document.getElementById('createTeamBtn').addEventListener('click', createTeam);
+            document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+            document.getElementById('resetPointsBtn').addEventListener('click', resetPoints);
+            
+            // Set interval to refresh data every 10 seconds
+            setInterval(fetchData, 10000);
+        });
+    </script>
+</body>
+</html>

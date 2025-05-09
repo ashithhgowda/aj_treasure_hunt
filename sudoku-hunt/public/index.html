@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bomb Defusal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    /* Base Styles */
+    :root {
+      --red: #ff0000;
+      --blue: #0066ff;
+      --dark-bg: #000;
+      --medium-bg: #1a1a1a;
+      --input-bg: rgba(30, 30, 30, 0.8);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Arial Black', sans-serif;
+      overflow: hidden;
+      background: var(--dark-bg);
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Header Styles */
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      padding: 10px 0;
+      background: rgba(0,0,0,0.7);
+    }
+    
+    .institution {
+      color: var(--red);
+      font-size: clamp(16px, 5vw, 24px);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0;
+      text-shadow: 0 0 10px var(--red);
+    }
+    
+    .ieee-branch {
+      color: var(--blue);
+      font-size: clamp(12px, 3.5vw, 18px);
+      letter-spacing: 3px;
+      margin: 5px 0 0;
+    }
+    
+    /* Page Containers */
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 70px 20px 20px;
+      background: radial-gradient(circle, var(--dark-bg) 0%, var(--medium-bg) 100%);
+    }
+    
+    /* Bomb Styles */
+    #bomb-container {
+      position: relative;
+      width: clamp(120px, 40vw, 200px);
+      height: clamp(120px, 40vw, 200px);
+      margin-bottom: clamp(20px, 8vw, 50px);
+    }
+    
+    #bomb {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 30%, #444, #111);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 
+        0 0 20px rgba(255, 50, 50, 0.8),
+        inset 0 -10px 30px rgba(0,0,0,0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+    
+    #bomb:before, #bomb:after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    #bomb:before {
+      top: clamp(-15px, -5vw, -25px);
+      width: clamp(20px, 6vw, 40px);
+      height: clamp(30px, 10vw, 60px);
+      background: linear-gradient(to bottom, #777, #333);
+      border-radius: 5px;
+      z-index: 1;
+    }
+    
+    #bomb:after {
+      top: clamp(-18px, -6vw, -35px);
+      width: clamp(10px, 3vw, 20px);
+      height: clamp(10px, 3vw, 20px);
+      background: #ff3333;
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--red);
+      z-index: 3;
+    }
+    
+    /* Title Styles */
+    #title-container {
+      text-align: center;
+      width: 100%;
+      max-width: min(90vw, 600px);
+    }
+    
+    #main-title {
+      color: var(--red);
+      font-size: clamp(24px, 8vw, 48px);
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin: 0 0 10px;
+      text-shadow: 0 0 15px var(--red);
+      line-height: 1.2;
+    }
+    
+    #sub-title {
+      color: var(--blue);
+      font-size: clamp(12px, 3.5vw, 18px);
+      letter-spacing: clamp(2px, 1vw, 8px);
+      opacity: 0;
+      line-height: 1.4;
+      padding: 0 10px;
+    }
+    
+    /* Login Form */
+    .login-container {
+      width: 100%;
+      max-width: min(90vw, 400px);
+      padding: clamp(20px, 5vw, 30px);
+      background: rgba(10, 10, 10, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid var(--red);
+    }
+    
+    .logo {
+      font-size: clamp(24px, 7vw, 36px);
+      color: var(--red);
+      text-align: center;
+      margin: 0 0 10px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px var(--red);
+    }
+    
+    .welcome {
+      font-size: clamp(14px, 4vw, 18px);
+      color: var(--blue);
+      text-align: center;
+      margin: 0 0 clamp(20px, 6vw, 30px);
+      letter-spacing: 1px;
+    }
+    
+    .input-group {
+      margin-bottom: clamp(15px, 4vw, 25px);
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #ccc;
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-size: clamp(12px, 3.5vw, 16px);
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: clamp(10px, 3vw, 12px) clamp(12px, 3vw, 15px);
+      border: 1px solid #333;
+      border-radius: 5px;
+      background: var(--input-bg);
+      color: white;
+      font-size: clamp(14px, 4vw, 16px);
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--red);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: clamp(10px, 3vw, 14px);
+      background: linear-gradient(to right, var(--red), #990000);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: clamp(14px, 4vw, 16px);
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .login-btn:hover {
+      background: linear-gradient(to right, #ff3333, #cc0000);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    }
+    
+    /* Animations */
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(3); opacity: 0.8; }
+      100% { transform: scale(5); opacity: 0; }
+    }
+    
+    @keyframes flash {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    
+    .explode {
+      animation: explode 0.8s forwards;
+    }
+    
+    .flash {
+      animation: flash 0.3s 3;
+    }
+    
+    .typewriter {
+      border-right: 3px solid var(--red);
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    /* Hidden Class */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="institution">AJIET</div>
+    <div class="ieee-branch">IEEE STUDENT BRANCH</div>
+  </div>
+  
+  <!-- Intro Page -->
+  <div id="intro-page" class="page">
+    <div id="bomb-container">
+      <div id="bomb"></div>
+    </div>
+    
+    <div id="title-container">
+      <div id="main-title"></div>
+      <div id="sub-title">DISARM OR DETONATE - THE FATE IS IN YOUR HANDS</div>
+    </div>
+  </div>
+  
+  <!-- Login Page -->
+  <div id="login-page" class="page hidden">
+    <div class="login-container">
+      <div class="logo">BOMB DEFUSAL</div>
+      <div class="welcome">ACCESS RESTRICTED</div>
+      
+      <form action="/login" method="POST">
+        <div class="input-group">
+          <label>OPERATIVE ID</label>
+          <input type="text" name="teamName" required />
+        </div>
+        
+        <div class="input-group">
+          <label>CODE PHRASE</label>
+          <input type="password" name="password" required />
+        </div>
+        
+        <button type="submit" class="login-btn">AUTHENTICATE</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Typewriter effect
+    function typeWriter(text, element, speed, callback) {
+      let i = 0;
+      element.innerHTML = '';
+      element.classList.add('typewriter');
+      
+      function typing() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        } else {
+          element.classList.remove('typewriter');
+          if (callback) callback();
+        }
+      }
+      typing();
+    }
+    
+    // Create explosion particles
+    function createExplosion() {
+      const container = document.getElementById('bomb-container');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: ${Math.random() * 50 + 30}px;
+          height: ${Math.random() * 50 + 30}px;
+          left: ${Math.random() * 100}%;
+          top: ${Math.random() * 100}%;
+          background: radial-gradient(circle, rgba(255,100,0,0.8) 0%, rgba(255,50,0,0) 70%);
+          border-radius: 50%;
+          opacity: 0;
+          z-index: 1;
+        `;
+        container.appendChild(particle);
+        
+        setTimeout(() => {
+          particle.style.transition = `all ${Math.random() * 0.5 + 0.5}s ease-out`;
+          particle.style.transform = `translate(${(Math.random() - 0.5) * 200}px, ${(Math.random() - 0.5) * 200}px)`;
+          particle.style.opacity = '0';
+        }, 10);
+      }
+      
+      document.body.classList.add('flash');
+      setTimeout(() => document.body.classList.remove('flash'), 1000);
+    }
+    
+    // Bomb click handler
+    document.getElementById('bomb').addEventListener('click', function() {
+      this.style.pointerEvents = 'none';
+      this.classList.add('explode');
+      createExplosion();
+      
+      typeWriter("BOMB DEFUSAL", document.getElementById('main-title'), 100, () => {
+        document.getElementById('sub-title').style.opacity = '1';
+        setTimeout(() => {
+          document.getElementById('intro-page').classList.add('hidden');
+          document.getElementById('login-page').classList.remove('hidden');
+        }, 2000);
+      });
+    });
+    
+    // Mobile viewport height fix
+    function adjustHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    window.addEventListener('resize', adjustHeight);
+    adjustHeight();
+  </script>
+</body>
+</html>

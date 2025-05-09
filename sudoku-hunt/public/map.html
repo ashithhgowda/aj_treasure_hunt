@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bomb Defusal Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* Base Styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Arial Black', sans-serif;
+      background: radial-gradient(circle, #000000 0%, #1a1a1a 100%);
+      color: white;
+      overflow: hidden;
+    }
+
+    /* Header Styles */
+    .header {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      z-index: 1000;
+    }
+    
+    .institution {
+      color: #ff0000;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    
+    .ieee-branch {
+      color: #0066ff;
+      font-size: 18px;
+      letter-spacing: 5px;
+      margin-bottom: 15px;
+    }
+
+    /* Team Display */
+    .team-display {
+      position: absolute;
+      top: 100px;
+      right: 30px;
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #ff0000;
+      border-radius: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    /* Map Container */
+    .map-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+      gap: 15px;
+    }
+
+    .map-box {
+      flex: 1;
+      min-height: 300px;
+      background: rgba(40, 40, 40, 0.8);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid #ff0000;
+      position: relative;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Direction Info */
+    .direction-info {
+      background: rgba(10, 10, 10, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid #ff0000;
+      text-align: center;
+    }
+
+    .destination {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #ff0000;
+      letter-spacing: 1px;
+    }
+
+    .direction-details {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .direction-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .direction-arrow {
+      font-size: 32px;
+      margin-bottom: 5px;
+      color: #ff0000;
+    }
+
+    .direction-distance {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0066ff;
+    }
+
+    .direction-text {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #ccc;
+    }
+
+    /* Clue Verification */
+    .verification-box {
+      display: none;
+      background: rgba(10, 10, 10, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid #ff0000;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .verification-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(30, 30, 30, 0.8);
+      color: white;
+      font-size: 16px;
+      border: 1px solid #333;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .verification-input:focus {
+      outline: none;
+      border-color: #ff0000;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .verify-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(to right, #ff0000, #990000);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .verify-btn:hover {
+      background: linear-gradient(to right, #ff3333, #cc0000);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    }
+
+    /* Message Box */
+    .message-box {
+      display: none;
+      background: rgba(10, 10, 10, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid #0066ff;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .message-text {
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    .continue-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(to right, #0066ff, #003399);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .continue-btn:hover {
+      background: linear-gradient(to right, #3388ff, #0055cc);
+      box-shadow: 0 0 15px rgba(0, 102, 255, 0.7);
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .loading-text {
+      color: #ff0000;
+      font-size: 24px;
+      margin-bottom: 30px;
+      letter-spacing: 3px;
+      text-align: center;
+    }
+
+    .bomb-loader {
+      width: 80px;
+      height: 80px;
+      position: relative;
+    }
+
+    .bomb-loader:before {
+      content: "💣";
+      font-size: 60px;
+      position: absolute;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .team-display {
+        top: 80px;
+        right: 20px;
+        font-size: 14px;
+      }
+
+      .destination {
+        font-size: 16px;
+      }
+
+      .direction-arrow {
+        font-size: 28px;
+      }
+
+      .direction-distance {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .team-display {
+        position: static;
+        margin: 0 auto 20px;
+        width: fit-content;
+      }
+
+      .direction-details {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <!-- <div class="header">
+    <div class="institution">AJIET</div>
+    <div class="ieee-branch">IEEE STUDENT BRANCH</div>
+  </div> -->
+
+  <!-- Team Display -->
+  <div class="team-display" id="teamDisplay">TEAM: <span id="teamName"></span></div>
+
+  <!-- Map Container -->
+  <div class="map-container">
+    <div class="map-box">
+      <div id="map"></div>
+    </div>
+    
+    <div class="direction-info">
+      <div class="destination" id="destination">TARGET LOCATION</div>
+      
+      <div class="direction-details">
+        <div class="direction-item">
+          <div class="direction-arrow" id="direction-arrow">↑</div>
+          <div class="direction-distance" id="direction-distance">0 m</div>
+        </div>
+      </div>
+      
+      <div class="direction-text" id="direction-text">ACQUIRING YOUR LOCATION...</div>
+      
+      <div class="verification-box" id="verificationBox">
+        <div class="direction-text">ENTER CLUE CODE TO DEFUSE</div>
+        <input type="text" class="verification-input" id="clueInput" placeholder="ENTER 6-DIGIT CODE">
+        <button class="verify-btn" id="verifyBtn">VERIFY CODE</button>
+      </div>
+      
+      <div class="message-box" id="messageBox">
+        <div class="message-text" id="messageText"></div>
+        <button class="continue-btn" id="continueBtn">CONTINUE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-text">PROCESSING CLUE VERIFICATION</div>
+    <div class="bomb-loader"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const clueLat = parseFloat(urlParams.get("lat"));
+    const clueLng = parseFloat(urlParams.get("lng"));
+    const teamName = urlParams.get("team");
+    const clueCode = urlParams.get("code");
+
+    // Set team name display
+    document.getElementById("teamName").textContent = teamName || 'UNKNOWN';
+
+    // Initialize map
+    const map = L.map('map').setView([clueLat, clueLng], 18);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Add clue marker
+    const clueMarker = L.marker([clueLat, clueLng], {
+        icon: L.divIcon({
+            className: 'clue-icon',
+            html: '💣',
+            iconSize: [40, 40]
+        })
+    }).addTo(map).bindPopup("CLUE LOCATION").openPopup();
+
+    let userMarker, accuracyCircle, directionLine;
+    let reachedClue = false;
+
+    // Function to calculate distance between two points
+    function getDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLon / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c * 1000; // meters
+    }
+
+    // Function to calculate bearing between two points
+    function getBearing(lat1, lon1, lat2, lon2) {
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
+        const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
+            Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLon);
+        const brng = Math.atan2(y, x);
+        return (brng * 180 / Math.PI + 360) % 360;
+    }
+
+    // Update direction information
+    function updateDirection(userLat, userLng) {
+        const distance = getDistance(userLat, userLng, clueLat, clueLng);
+        const bearing = getBearing(userLat, userLng, clueLat, clueLng);
+        
+        // Always show distance in meters when < 1km, otherwise in km
+        const displayDistance = distance < 1000 ? 
+            `${Math.round(distance)} m` : 
+            `${(distance/1000).toFixed(1)} km`;
+        
+        document.getElementById("direction-distance").innerText = displayDistance;
+        
+        let message = "";
+        let arrow = "↑";
+        
+        if (distance < 20) {
+            if (!reachedClue) {
+                message = "CLUE WITHIN RANGE - ENTER CODE TO DEFUSE";
+                arrow = "💣";
+                document.getElementById("verificationBox").style.display = 'block';
+                reachedClue = true;
+            }
+        } else if (bearing >= 45 && bearing < 135) {
+            message = `TURN LEFT AND PROCEED ${displayDistance}`;
+            arrow = "←";
+        } else if (bearing >= 135 && bearing < 225) {
+            message = `MOVE BACKWARD ${displayDistance}`;
+            arrow = "↓";
+        } else if (bearing >= 225 && bearing < 315) {
+            message = `TURN RIGHT AND PROCEED ${displayDistance}`;
+            arrow = "→";
+        } else {
+            message = `MOVE STRAIGHT ${displayDistance}`;
+            arrow = "↑";
+        }
+        
+        document.getElementById("direction-text").innerText = message;
+        document.getElementById("direction-arrow").innerText = arrow;
+    }
+
+    // Handle location found
+    function onLocationFound(e) {
+        const userLat = e.latlng.lat;
+        const userLng = e.latlng.lng;
+        
+        // Remove previous markers if they exist
+        if (userMarker) map.removeLayer(userMarker);
+        if (accuracyCircle) map.removeLayer(accuracyCircle);
+        if (directionLine) map.removeLayer(directionLine);
+        
+        // Add new markers
+        userMarker = L.marker([userLat, userLng], {
+            icon: L.divIcon({
+                className: 'user-icon',
+                html: '🟢',
+                iconSize: [30, 30]
+            })
+        }).addTo(map).bindPopup("YOUR POSITION");
+        
+        accuracyCircle = L.circle([userLat, userLng], {
+            radius: e.accuracy,
+            color: 'rgba(0, 150, 255, 0.3)',
+            fillColor: 'rgba(0, 150, 255, 0.1)'
+        }).addTo(map);
+        
+        directionLine = L.polyline([[userLat, userLng], [clueLat, clueLng]], {
+            color: 'rgba(255, 0, 0, 0.8)',
+            weight: 4,
+            dashArray: '10, 10'
+        }).addTo(map);
+        
+        // Fit map to show both points
+        map.fitBounds(directionLine.getBounds(), { padding: [50, 50] });
+        
+        // Update direction information
+        updateDirection(userLat, userLng);
+    }
+
+    // Handle location error
+    function onLocationError(e) {
+        document.getElementById("direction-text").innerText = "LOCATION ERROR: " + e.message;
+    }
+
+    // Verify clue code
+    document.getElementById("verifyBtn").addEventListener("click", async function() {
+        const enteredCode = document.getElementById("clueInput").value.trim().toUpperCase();
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        
+        if (!enteredCode) {
+            alert("Please enter a verification code");
+            return;
+        }
+        
+        // Show loading animation
+        loadingOverlay.style.opacity = "1";
+        loadingOverlay.style.pointerEvents = "auto";
+        
+        try {
+            // Send verification request to server
+            const response = await fetch('/verify-clue', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    team: teamName,
+                    clueCode: clueCode,
+                    enteredCode: enteredCode
+                })
+            });
+            
+            const result = await response.json();
+            
+            // Hide loading overlay
+            loadingOverlay.style.opacity = "0";
+            loadingOverlay.style.pointerEvents = "none";
+            
+            const messageBox = document.getElementById("messageBox");
+            const messageText = document.getElementById("messageText");
+            const continueBtn = document.getElementById("continueBtn");
+            
+            if (result.success) {
+                // Correct code
+                messageText.textContent = result.message;
+                continueBtn.textContent = "CONTINUE MISSION";
+                continueBtn.onclick = function() {
+                    window.location.href = `index.html?message=${encodeURIComponent(result.message)}`;
+                };
+            } else {
+                // Incorrect code or clue already claimed
+                messageText.textContent = result.message;
+                continueBtn.textContent = "TRY ANOTHER CLUE";
+                continueBtn.onclick = function() {
+                    window.location.href = `index.html?message=${encodeURIComponent(result.message)}`;
+                };
+            }
+            
+            document.getElementById("verificationBox").style.display = 'none';
+            messageBox.style.display = 'block';
+            
+        } catch (error) {
+            console.error('Verification error:', error);
+            loadingOverlay.style.opacity = "0";
+            loadingOverlay.style.pointerEvents = "none";
+            alert("Error verifying code. Please try again.");
+        }
+    });
+
+    // Start watching location with high accuracy
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+    map.locate({
+        setView: false,
+        maxZoom: 18,
+        watch: true,
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
+    });
+
+    // Set destination coordinates
+    document.getElementById("destination").innerText = 
+        `TARGET: (${clueLat.toFixed(4)}, ${clueLng.toFixed(4)})`;
+    
+    // Initially hide verification box
+    document.getElementById("verificationBox").style.display = 'none';
+    document.getElementById("messageBox").style.display = 'none';
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{
+  "TeamAlpha": {
+    "password": "alpha123",
+    "points": 0,
+    "currentClue": null,
+    "disqualified": false,
+    "round2": {
+      "availableCodes": [
+        "code1",
+        "code2",
+        "code3",
+        "code4",
+        "code5",
+        "code6",
+        "code7",
+        "code8",
+        "code9",
+        "code10"
+      ],
+      "frozenCodes": [],
+      "attempts": {}
+    }
+  },
+  "TeamBeta": {
+    "password": "beta456",
+    "points": 0,
+    "currentClue": null,
+    "attempts": {},
+    "disqualified": false,
+    "round2": {
+      "availableCodes": [
+        "code1",
+        "code2",
+        "code3",
+        "code4",
+        "code5",
+        "code6",
+        "code7",
+        "code8",
+        "code9",
+        "code10"
+      ],
+      "frozenCodes": [],
+      "completedCodes": [],
+      "attempts": {
+        "code2": 1
+      }
+    }
+  },
+  "admin": {
+    "password": "admin123",
+    "points": 0,
+    "currentClue": null,
+    "attempts": {},
+    "disqualified": false,
+    "round3": {
+      "completedChallenges": [],
+      "currentChallenge": null,
+      "score": 0,
+      "availableChallenges": [
+        "challenge1",
+        "challenge2",
+        "challenge3"
+      ]
+    },
+    "round2": {
+      "availableCodes": [
+        "code1",
+        "code2",
+        "code3",
+        "code4",
+        "code5",
+        "code6",
+        "code7",
+        "code8",
+        "code9",
+        "code10"
+      ],
+      "frozenCodes": [],
+      "attempts": {}
+    }
+  }
+}

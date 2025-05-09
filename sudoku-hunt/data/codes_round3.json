@@ -1,0 +1,122 @@
+{
+  "code1": {
+      "clueNumber": "203",
+      "verificationCode": "81",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code2": {
+      "clueNumber": "198",
+      "verificationCode": "59",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code3": {
+      "clueNumber": "203",
+      "verificationCode": "88",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code4": {
+      "clueNumber": "224",
+      "verificationCode": "22",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code5": {
+      "clueNumber": "219",
+      "verificationCode": "35",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code6": {
+      "clueNumber": "198",
+      "verificationCode": "52",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code7": {
+      "clueNumber": "203",
+      "verificationCode": "64",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code8": {
+      "clueNumber": "203",
+      "verificationCode": "49",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code9": {
+      "clueNumber": "230",
+      "verificationCode": "60",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    },
+    
+  "code10": {
+      "clueNumber": "219",
+      "verificationCode": "79",
+      "location": {
+        "lat": 12.9711,
+        "lng": 77.5941
+      },
+      "completedBy": [],
+      "teams": [],
+      "locked": false
+    }
+    
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round 2 - Code Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+    /* Base Styles */
+    :root {
+      --red: #ff0000;
+      --blue: #0066ff;
+      --dark-bg: #000;
+      --medium-bg: #1a1a1a;
+      --input-bg: rgba(30, 30, 30, 0.8);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', 'Arial Black', sans-serif;
+      overflow: auto;
+      background: var(--dark-bg);
+      -webkit-tap-highlight-color: transparent;
+      color: white;
+    }
+    
+    /* Header Styles */
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      padding: 10px 0;
+      background: rgba(0,0,0,0.7);
+      border-bottom: 1px solid var(--red);
+    }
+    
+    .institution {
+      color: var(--red);
+      font-size: clamp(16px, 5vw, 24px);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0;
+      text-shadow: 0 0 10px var(--red);
+    }
+    
+    .ieee-branch {
+      color: var(--blue);
+      font-size: clamp(12px, 3.5vw, 18px);
+      letter-spacing: 3px;
+      margin: 5px 0 0;
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: min(95vw, 600px);
+      margin: 80px auto 20px;
+      background: rgba(10, 10, 10, 0.8);
+      padding: clamp(15px, 4vw, 25px);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      border: 1px solid var(--red);
+    }
+    
+    /* Title Styles */
+    h1 {
+      text-align: center;
+      color: var(--red);
+      font-size: clamp(18px, 6vw, 28px);
+      margin: 0 0 15px;
+      text-shadow: 0 0 10px var(--red);
+      letter-spacing: 1px;
+    }
+    
+    .team-name {
+      text-align: center;
+      font-weight: bold;
+      margin: 0 0 20px;
+      color: var(--blue);
+      font-size: clamp(14px, 4vw, 18px);
+      letter-spacing: 1px;
+    }
+    
+    /* Code Buttons Container */
+    .code-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: clamp(10px, 3vw, 15px);
+      margin: 20px 0;
+    }
+    
+    /* Code Buttons */
+    .code-btn {
+      padding: clamp(10px, 3vw, 15px);
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(to bottom, #222, #111);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(12px, 3.5vw, 16px);
+      border: 1px solid #333;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .code-btn:hover:not(.frozen) {
+      background: linear-gradient(to bottom, #333, #222);
+      border-color: var(--blue);
+      box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .code-btn:active:not(.frozen) {
+      transform: translateY(1px);
+    }
+    
+    .code-btn.frozen {
+      background: linear-gradient(to bottom, #330000, #220000);
+      cursor: not-allowed;
+      border-color: var(--red);
+      opacity: 0.7;
+    }
+    
+    .attempts {
+      display: block;
+      font-size: clamp(10px, 3vw, 12px);
+      font-weight: normal;
+      margin-top: 5px;
+      color: #ccc;
+    }
+    
+    /* Message Styles */
+    .message {
+      padding: clamp(10px, 3vw, 15px);
+      margin: 0 0 clamp(15px, 4vw, 20px);
+      border-radius: 5px;
+      text-align: center;
+      font-size: clamp(12px, 3.5vw, 16px);
+      display: none;
+    }
+    
+    .error {
+      background: rgba(255, 50, 50, 0.2);
+      color: #ff6666;
+      border: 1px solid var(--red);
+    }
+    
+    .success {
+      background: rgba(50, 255, 50, 0.2);
+      color: #66ff66;
+      border: 1px solid #00ff00;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      .code-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        margin-top: 100px;
+      }
+      
+      .code-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px rgba(255,0,0,0.5); }
+      50% { box-shadow: 0 0 20px rgba(255,0,0,0.8); }
+      100% { box-shadow: 0 0 5px rgba(255,0,0,0.5); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="institution">AJIET</div>
+    <div class="ieee-branch">IEEE STUDENT BRANCH</div>
+  </div>
+
+  <div class="container">
+    <h1>CODE SELECTION</h1>
+    <div class="team-name">TEAM: <span id="teamName"></span></div>
+    
+    <div id="message" class="message"></div>
+    
+    <div id="codeContainer" class="code-container"></div>
+  </div>
+
+  <script>
+    // Get team from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const team = urlParams.get('team');
+    document.getElementById('teamName').textContent = team || 'UNKNOWN';
+
+    // Display message if any
+    const message = urlParams.get('message');
+    const messageType = urlParams.get('messageType');
+    if (message) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = decodeURIComponent(message.replace(/\+/g, ' '));
+      messageDiv.className = `message ${messageType || 'error'}`;
+      messageDiv.style.display = 'block';
+    }
+
+    // Load and render team data
+    async function loadTeamData() {
+      try {
+        const response = await fetch(`/team-data?team=${team}`);
+        const data = await response.json();
+        renderCodeButtons(data.round2);
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('Failed to load team data', 'error');
+      }
+    }
+
+    // Render code buttons with attempt counters
+    function renderCodeButtons(round2Data) {
+      const container = document.getElementById('codeContainer');
+      container.innerHTML = '';
+      
+      for (let i = 1; i <= 10; i++) {
+        const code = `code${i}`;
+        const isFrozen = round2Data.frozenCodes.includes(code);
+        const attempts = round2Data.attempts[code] || 0;
+        const isAvailable = round2Data.availableCodes.includes(code);
+        
+        const btn = document.createElement('a');
+        btn.className = `code-btn ${isFrozen ? 'frozen' : ''}`;
+        btn.href = isAvailable && !isFrozen ? 
+          `dashboard.html?team=${team}&code=${code}` : 
+          'javascript:void(0)';
+        
+        let btnHTML = `CODE ${i}`;
+        if (attempts > 0) {
+          btnHTML += `<span class="attempts">${3-attempts} attempts left</span>`;
+        }
+        if (isFrozen) {
+          btnHTML += `<span class="attempts">LOCKED</span>`;
+        }
+        
+        btn.innerHTML = btnHTML;
+        container.appendChild(btn);
+      }
+    }
+
+    // Helper function to show messages
+    function showMessage(text, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = text;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', loadTeamData);
+  </script>
+</body>
+</html>
